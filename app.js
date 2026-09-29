@@ -1,11 +1,9 @@
-/* ============================================================
-   Expense Tracker — app.js
-   Data, UI, LocalStorage, Filters, CRUD
-   ============================================================ */
+/*  Expense Tracker — app.js
+   Data, UI, LocalStorage, Filters, CRUD*/
 
    'use strict';
 
-   /* ── Constants ── */
+   /* Constants */
    const STORAGE_KEY = 'expenseTrackerData_v3';
    
    const CATEGORIES = {
@@ -30,7 +28,7 @@
      ],
    };
    
-   /* ── State ── */
+   /* State */
    let transactions    = [];
    let activeType      = 'all';
    let activeCategory  = 'all';
@@ -38,7 +36,7 @@
    let deleteTargetId  = null;
    let currentFormType = 'expense';
    
-   /* ── DOM References ── */
+   /* DOM References */
    const $ = id => document.getElementById(id);
    
    const els = {
@@ -73,7 +71,7 @@
      toast:           $('toast'),
    };
    
-   /* ── LocalStorage ── */
+   /* LocalStorage */
    function saveToStorage() {
      localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
    }
@@ -87,7 +85,7 @@
      }
    }
    
-   /* ── Utilities ── */
+   /* Utilities */
    function generateId() {
      return `tx_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
    }
@@ -123,7 +121,7 @@
      }[c]));
    }
    
-   /* ── Toast ── */
+   /* Toast */
    let toastTimer = null;
    
    function showToast(message, type = 'success') {
@@ -133,14 +131,14 @@
      toastTimer = setTimeout(() => els.toast.classList.remove('show'), 3000);
    }
    
-   /* ── Totals ── */
+   /* Totals */
    function getTotals(list = transactions) {
      const income   = list.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
      const expenses = list.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
      return { income, expenses, balance: income - expenses };
    }
    
-   /* ── Summary Render ── */
+   /* Summary Render */
    function renderSummary() {
      const { income, expenses, balance } = getTotals();
      els.totalIncome.textContent   = formatCurrency(income);
@@ -148,7 +146,7 @@
      els.balance.textContent       = formatCurrency(Math.max(0, balance));
    }
    
-   /* ── Category Filter Builder ── */
+   /* Category Filter Builder */
    function buildCategoryFilterOptions() {
      const usedCats = [...new Set(transactions.map(t => t.category))];
      const allCats  = [...CATEGORIES.expense, ...CATEGORIES.income];
@@ -168,7 +166,7 @@
      activeCategory = sel.value;
    }
    
-   /* ── Filtered Transactions ── */
+   /* Filtered Transactions */
    function getFilteredTransactions() {
      return transactions
        .filter(t => {
@@ -183,7 +181,7 @@
        .sort((a, b) => new Date(b.date) - new Date(a.date) || b.createdAt - a.createdAt);
    }
    
-   /* ── Render Transactions ── */
+   /* Render Transactions */
    function renderTransactions() {
      const filtered = getFilteredTransactions();
      const list = els.transactionList;
@@ -231,7 +229,7 @@
      });
    }
 
-    /* ── Monthly Summary & Category Chart ── */
+    /* Monthly Summary & Category Chart */
       let selectedMonth = null;
       const CHART_COLORS = ['#7c6dff', '#ff4d6d', '#22d05e', '#ffb02e', '#2ec5ff', '#e05cff', '#ff7a45', '#5ce0b8', '#a0a6c4', '#c9d84a'];
    
@@ -306,7 +304,7 @@
           </div>`;
         }).join('');
       }
-   /* ── Full Refresh ── */
+  /* Full Refresh */
    function refresh() {
      renderSummary();
      buildCategoryFilterOptions();
@@ -316,7 +314,7 @@
 
    }
    
-   /* ── Modal: Category Options ── */
+   /* Modal: Category Options */
    function populateCategoryOptions(type) {
      const sel = els.category;
      sel.innerHTML = '';
@@ -328,7 +326,7 @@
      });
    }
    
-   /* ── Modal: Open / Close ── */
+   /* Modal: Open / Close */
    function openAddModal() {
      currentFormType = 'expense';
      els.editId.value = '';
@@ -376,8 +374,7 @@
      populateCategoryOptions(type);
      clearFormErrors();
    }
-      /* ── Chronological balance check ── */
-   // Returns the first date where the running balance drops below ₹0, or null.
+      /* Chronological balance check */
    function firstNegativeDate(list) {
     const sorted = [...list].sort((a, b) =>
       a.date.localeCompare(b.date) ||
@@ -395,8 +392,8 @@
       .toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
-    /* ── Form Validation ── */
-      const MAX_AMOUNT = 100000000; // ₹10 crore
+    /* Form Validation */
+      const MAX_AMOUNT = 100000000; 
       const MIN_DATE   = '2000-01-01';
       const FIELD_ERROR = { amount: 'amountError', date: 'dateError', category: 'categoryError' };
    
@@ -459,7 +456,7 @@
           errors.category = `That category doesn't belong to ${currentFormType}. Please choose again.`;
         }
    
-        // Balance rule: running balance must never go below ₹0 on any date
+        // Balance rule
         if (!errors.amount && !errors.date) {
           const amount  = parseFloat(amtVal.toFixed(2));
           const editId  = els.editId.value;
@@ -482,7 +479,7 @@
         return fields.length === 0;
       }
    
-   /* ── CRUD ── */
+   /* CRUD */
    function addTransaction(data) {
      transactions.push({ ...data, id: generateId(), createdAt: Date.now() });
      saveToStorage();
@@ -513,7 +510,6 @@
      return true;
    }
    
-   /* ── Delete Modal ── */
    function openDeleteModal(id) {
      deleteTargetId = id;
      els.deleteOverlay.classList.add('open');
@@ -524,7 +520,7 @@
      els.deleteOverlay.classList.remove('open');
    }
    
-   /* ── Event Listeners ── */
+   /* Event Listeners */
    
    // Form submit
    els.transactionForm.addEventListener('submit', e => {
@@ -608,11 +604,11 @@
      if (e.key === 'Escape') { closeModal(); closeDeleteModal(); }
      if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); openAddModal(); }
    });
-   // Stop mouse wheel from changing the amount value
+   
 els.amount.addEventListener('wheel', () => {
   els.amount.blur();
 }, { passive: true });
-   /* ── Init ── */
+   /* Init */
    function init() {
     els.date.max = getTodayStr();
      loadFromStorage();

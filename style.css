@@ -1,8 +1,6 @@
-/* ═══════════════════════════════════════════
-   Expense Tracker — style.css
-═══════════════════════════════════════════ */
+/*Expense Tracker — style.css */
 
-/* ── Design Tokens ── */
+/* Design Tokens */
 :root {
   color-scheme: dark;
 
@@ -42,7 +40,7 @@
   --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-/* ── Reset ── */
+/* Reset */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
@@ -60,7 +58,7 @@ body {
   overflow-x: hidden;
 }
 
-/* ── Header ── */
+/* Header */
 .header {
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
@@ -87,7 +85,7 @@ body {
   color: var(--text-primary);
 }
 
-/* ── Container ── */
+/* Container */
 .container {
   max-width: 960px;
   width: 100%;
@@ -98,7 +96,7 @@ body {
   gap: 20px;
 }
 
-/* ── Summary Cards ── */
+/* Summary Cards */
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -136,7 +134,7 @@ body {
 .card-income  .card-amount { color: var(--income);  }
 .card-expense .card-amount { color: var(--expense); }
 
-/* ── Monthly Summary & Category Chart ── */
+/* Monthly Summary & Category Chart */
 .insights {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -183,7 +181,7 @@ body {
 .chart-value { color: var(--text-secondary); font-variant-numeric: tabular-nums; text-align: right; }
 .chart-empty { font-size: 0.85rem; color: var(--text-muted); padding: 8px 0; }
 
-/* ── Filters ── */
+/* Filters */
 .filters-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -231,7 +229,7 @@ body {
 .pill:hover { border-color: var(--accent); color: var(--accent); }
 .pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-/* ── Inputs & Selects ── */
+/* Inputs & Selects */
 .text-input,
 .select-input {
   width: 100%;
@@ -273,7 +271,7 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
-/* ── Transactions Section ── */
+/* Transactions Section */
 .transactions-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -403,7 +401,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 .action-btn:hover { border-color: var(--accent); color: var(--accent); }
 .action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
 
-/* ── Buttons ── */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -428,7 +426,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 .btn-danger { background: var(--danger); color: #fff; }
 .btn-danger:hover { background: var(--danger-hover); }
 
-/* ── Modal ── */
+/* Modal */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -502,7 +500,7 @@ input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 .delete-msg { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }
 .delete-msg strong { color: var(--text-primary); }
 
-/* ── Form ── */
+/* Form */
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; cursor: default; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
@@ -586,7 +584,7 @@ form button { cursor: pointer; }
 
 .type-btn:not(.active):hover { border-color: var(--accent); color: var(--accent); }
 
-/* ── Toast ── */
+/* Toast */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -615,13 +613,13 @@ form button { cursor: pointer; }
 .toast.error   { border-left: 3px solid var(--expense); }
 .toast.info    { border-left: 3px solid var(--accent);  }
 .fab { display: none; }
-/* ── Scrollbar ── */
+/* Scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-/* ── Responsive — Tablet ≤768px ── */
+/* Responsive — Tablet ≤768px */
 @media (max-width: 768px) {
   .summary-cards { grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .card { padding: 14px 12px; }
@@ -636,8 +634,8 @@ form button { cursor: pointer; }
   .stat-value { font-size: 0.92rem; }
 }
 
-/* ── Responsive — Mobile ≤540px ── */
-/* ── Responsive — Mobile ≤540px ── */
+/* Responsive — Mobile ≤540px */
+/* Responsive — Mobile ≤540px */
 @media (max-width: 540px) {
   /* Header: hide button, FAB takes over */
   .header { padding-top: env(safe-area-inset-top, 0px); }
@@ -662,7 +660,7 @@ form button { cursor: pointer; }
   .chart-row { grid-template-columns: 1fr auto; gap: 6px 10px; }
   .chart-track { grid-column: 1 / -1; order: 3; }
 
-  
+
   /* Filters */
   .filters-section { padding: 14px; gap: 12px; }
   .filter-group, .filter-search { min-width: 100%; }
