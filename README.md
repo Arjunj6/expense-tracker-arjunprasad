@@ -47,7 +47,7 @@ npm install
 npm run dev
 ```
 
-Then open **http://localhost:8000** in your browser or you can add your own port number using --port xxxx
+Then open **http://localhost:8000** in your browser or you can add your own port number using -- --port xxxx
 
 ## Notes
 
