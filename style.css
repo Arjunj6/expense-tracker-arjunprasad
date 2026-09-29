@@ -655,13 +655,14 @@ form button { cursor: pointer; }
   .card { padding: 14px; }
   .card-amount { font-size: 1.15rem; }
   .card-balance .card-amount { font-size: 1.6rem; }
-  
+
   /* Monthly summary */
   .insights-body { padding: 14px; }
   .month-select { min-width: 0; font-size: 14px; min-height: 38px; }
   .chart-row { grid-template-columns: 1fr auto; gap: 6px 10px; }
   .chart-track { grid-column: 1 / -1; order: 3; }
 
+  
   /* Filters */
   .filters-section { padding: 14px; gap: 12px; }
   .filter-group, .filter-search { min-width: 100%; }

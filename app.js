@@ -503,7 +503,7 @@
      const nextList = transactions.filter(t => t.id !== id);
      const badDate = firstNegativeDate(nextList);
      if (badDate) {
-       showToast(`Cannot delete: balance would go below ₹0 on ${fmtDay(badDate)}.`, 'error');
+       showToast(`Cannot delete: balance would go below ₹0 on ${fmtDay(badDate)}.`, 'error'); 
        return false;
      }
      transactions = nextList;
