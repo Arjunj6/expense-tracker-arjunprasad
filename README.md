@@ -49,6 +49,11 @@ npm run dev
 
 Then open **http://localhost:8000** in your browser or you can add your own port number using --port xxxx
 
+## Notes
+
+- `npm install` may report a couple of audit warnings. They come from Vite's dev tooling, which only runs locally and is not part of the built app.
+
+
 ## Run on Your Phone (hosted from your PC)
 
 You can open the app on your mobile while it runs on your computer. This is handy for testing the mobile layout.
