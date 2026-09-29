@@ -376,7 +376,25 @@
      populateCategoryOptions(type);
      clearFormErrors();
    }
-   
+      /* ── Chronological balance check ── */
+   // Returns the first date where the running balance drops below ₹0, or null.
+   function firstNegativeDate(list) {
+    const sorted = [...list].sort((a, b) =>
+      a.date.localeCompare(b.date) ||
+      (a.type === b.type ? 0 : a.type === 'income' ? -1 : 1));
+    let bal = 0;
+    for (const t of sorted) {
+      bal += t.type === 'income' ? t.amount : -t.amount;
+      if (bal < -0.005) return t.date;
+    }
+    return null;
+  }
+
+  function fmtDay(dateStr) {
+    return new Date(dateStr + 'T00:00:00')
+      .toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
     /* ── Form Validation ── */
       const MAX_AMOUNT = 100000000; // ₹10 crore
       const MIN_DATE   = '2000-01-01';
@@ -441,21 +459,20 @@
           errors.category = `That category doesn't belong to ${currentFormType}. Please choose again.`;
         }
    
-        // Balance rule (only once the amount itself is valid)
-        if (!errors.amount) {
-          const amount = parseFloat(amtVal.toFixed(2));
-          const editId = els.editId.value;
+        // Balance rule: running balance must never go below ₹0 on any date
+        if (!errors.amount && !errors.date) {
+          const amount  = parseFloat(amtVal.toFixed(2));
+          const editId  = els.editId.value;
+          const updated = { type: currentFormType, amount, date: dateVal };
           const nextList = editId
-            ? transactions.map(t => t.id === editId ? { ...t, type: currentFormType, amount } : t)
-            : [...transactions, { type: currentFormType, amount }];
-   
-          if (getTotals(nextList).balance < 0) {
-            const others = getTotals(editId ? transactions.filter(t => t.id !== editId) : transactions);
-            if (currentFormType === 'expense') {
-              errors.amount = `The math doesn't add up. You can spend up to ${formatCurrency(Math.max(0, others.balance))}.`;
-            } else {
-              errors.amount = `Income can't be lower than ${formatCurrency(others.expenses)}, because your expenses would exceed your income.`;
-            }
+            ? transactions.map(t => t.id === editId ? { ...t, ...updated } : t)
+            : [...transactions, updated];
+
+          const badDate = firstNegativeDate(nextList);
+          if (badDate) {
+            errors.amount = currentFormType === 'expense'
+              ? `The math doesn't add up on ${fmtDay(badDate)}. Add income on or before that date, or pick a later date.`
+              : `This change would make your balance negative on ${fmtDay(badDate)}.`;
           }
         }
    
@@ -484,8 +501,9 @@
    
    function deleteTransaction(id) {
      const nextList = transactions.filter(t => t.id !== id);
-     if (getTotals(nextList).balance < 0) {
-       showToast('Cannot delete: expenses would exceed remaining balance.', 'error');
+     const badDate = firstNegativeDate(nextList);
+     if (badDate) {
+       showToast(`Cannot delete: balance would go below ₹0 on ${fmtDay(badDate)}.`, 'error');
        return false;
      }
      transactions = nextList;
