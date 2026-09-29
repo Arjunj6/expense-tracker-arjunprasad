@@ -83,7 +83,7 @@ Then open `http://<your-ip>:5173` on your phone.
 **Not loading on your phone?**
 
 - Make sure both devices are on the **same Wi-Fi** (not guest Wi-Fi or mobile data).
-- Allow Node.js through your PC firewall when prompted (on Windows, choose **Private networks**), or allow inbound traffic on port `5173`.
+- Allow Node.js through your PC firewall when prompted (on Windows, choose **Private networks**), or allow inbound traffic on port `8000`.
 - Some public or office networks block device-to-device connections. Try a home network or your phone's hotspot with the PC connected to it.
 - Use `http://`, not `https://`.
 
