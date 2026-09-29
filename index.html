@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">ExpenseTracker</div>
+      <button class="btn btn-primary" id="openAddModal">Add Transaction</button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- Summary Cards -->
+    <section class="summary-cards">
+      <div class="card card-balance">
+        <p class="card-label">Current Balance</p>
+        <h2 class="card-amount" id="balance">₹0.00</h2>
+      </div>
+      <div class="card card-income">
+        <p class="card-label">Total Income</p>
+        <h2 class="card-amount" id="totalIncome">₹0.00</h2>
+      </div>
+      <div class="card card-expense">
+        <p class="card-label">Total Expenses</p>
+        <h2 class="card-amount" id="totalExpenses">₹0.00</h2>
+      </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="filters-section">
+      <div class="filter-group">
+        <label class="filter-label">Type</label>
+        <div class="filter-pills" id="typeFilter">
+          <button class="pill active" data-value="all">All</button>
+          <button class="pill" data-value="income">Income</button>
+          <button class="pill" data-value="expense">Expense</button>
+        </div>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        <select class="select-input" id="categoryFilter">
+          <option value="all">All Categories</option>
+        </select>
+      </div>
+      <div class="filter-group filter-search">
+        <label class="filter-label">Search</label>
+        <input type="text" class="text-input" id="searchInput" placeholder="Search description or category…" />
+      </div>
+    </section>
+
+    <!-- Transaction List -->
+    <section class="transactions-section">
+      <div class="section-header">
+        <h3 class="section-title">Transactions</h3>
+        <span class="tx-count" id="txCount">0 transactions</span>
+      </div>
+      <div id="transactionList" class="transaction-list">
+        <div class="empty-state" id="emptyState">
+          <p>No transactions yet</p>
+          <small>Click "Add Transaction" to get started!</small>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Add / Edit Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Add Transaction</h3>
+        <button class="modal-close" id="closeModal">✕</button>
+      </div>
+      <form id="transactionForm" novalidate>
+        <input type="hidden" id="editId" />
+
+        <div class="form-group">
+          <label class="form-label">Transaction Type</label>
+          <div class="type-toggle" id="typeToggle">
+            <button type="button" class="type-btn active" data-type="expense">Expense</button>
+            <button type="button" class="type-btn" data-type="income">Income</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="amount">Amount <span class="required">*</span></label>
+            <div class="input-prefix">
+              <span>₹</span>
+              <input type="number" id="amount" class="text-input" placeholder="0.00" min="0.01" step="0.01" required autocomplete="off" />
+            </div>
+            <span class="field-error" id="amountError"></span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="date">Date <span class="required">*</span></label>
+            <input type="date" id="date" class="text-input" required />
+            <span class="field-error" id="dateError"></span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category">Category <span class="required">*</span></label>
+          <select id="category" class="select-input" required></select>
+          <span class="field-error" id="categoryError"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Description</label>
+          <input type="text" id="description" class="text-input" placeholder="Optional note…" maxlength="100" autocomplete="off" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="cancelModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Add Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Modal -->
+  <div class="modal-overlay" id="deleteOverlay">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3>Delete Transaction</h3>
+        <button class="modal-close" id="closeDelete">✕</button>
+      </div>
+      <p class="delete-msg">Are you sure you want to delete this transaction? This action <strong>cannot be undone</strong>.</p>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="cancelDelete">Cancel</button>
+        <button class="btn btn-danger" id="confirmDelete">Delete</button>
+      </div>
+    </div>
+  </div>
+<!-- Mobile FAB -->
+<button class="fab" id="fabAdd" aria-label="Add transaction">+</button> 
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
