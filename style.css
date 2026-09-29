@@ -166,7 +166,8 @@ body {
   letter-spacing: 0.06em;
 }
 
-.filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-pills { display: flex; gap: 6px; flex-wrap: nowrap; align-items: center; min-height: 38px; }
+.filter-group:first-child { flex: 0 0 auto; }
 
 .pill {
   padding: 6px 14px;
