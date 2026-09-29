@@ -113,9 +113,9 @@ All transactions are stored in your browser's `localStorage` on your own device.
 ## Troubleshooting
 
 - **`npm: command not found`**: install Node.js from [nodejs.org](https://nodejs.org/) and reopen your terminal.
-- **`Port 5173 is already in use`**: close the other process using that port, or change the port in the `dev` script in `package.json`.
+- **`Port 8000 is already in use`**: close the other process using that port, or change the port in the `dev` script in `package.json`.
 - **Blank page or missing styles after deploying**: check that the `base` option in `vite.config.js` matches your repo name.
-- **Transactions disappeared**: they live in browser `localStorage`, so they will not carry over between browsers, devices or after clearing site data.
+- **Transactions disappeared**: they live in browser `localStorage`, so they will not carry over between browsers, devices or after clearing browser cache.
 
 Please Refer [this](https://prowe214.medium.com/tip-how-to-view-localhost-web-apps-on-your-phone-ad6b2c883a7c)
 
