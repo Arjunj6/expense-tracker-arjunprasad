@@ -51,6 +51,12 @@
      categoryFilter:  $('categoryFilter'),
      searchInput:     $('searchInput'),
      typeFilter:      $('typeFilter'),
+     monthSelect:     $('monthSelect'),
+     monthIncome:     $('monthIncome'),
+     monthExpense:    $('monthExpense'),
+     monthNet:        $('monthNet'),
+     monthCompare:    $('monthCompare'),
+     categoryChart:   $('categoryChart'),
    
      modalOverlay:    $('modalOverlay'),
      modalTitle:      $('modalTitle'),
@@ -224,12 +230,90 @@
        list.appendChild(item);
      });
    }
+
+    /* ── Monthly Summary & Category Chart ── */
+      let selectedMonth = null;
+      const CHART_COLORS = ['#7c6dff', '#ff4d6d', '#22d05e', '#ffb02e', '#2ec5ff', '#e05cff', '#ff7a45', '#5ce0b8', '#a0a6c4', '#c9d84a'];
    
+      const monthKey = dateStr => dateStr.slice(0, 7);
+   
+      function monthLabel(key) {
+        const [y, m] = key.split('-').map(Number);
+        return new Date(y, m - 1, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      }
+   
+      function prevMonthKey(key) {
+        const [y, m] = key.split('-').map(Number);
+        const d = new Date(y, m - 2, 1);
+        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      }
+   
+      function buildMonthOptions() {
+        const current = monthKey(getTodayStr());
+        const keys = [...new Set(transactions.map(t => monthKey(t.date)))];
+        if (!keys.includes(current)) keys.push(current);
+        keys.sort().reverse();
+   
+        els.monthSelect.innerHTML = keys
+          .map(k => `<option value="${k}">${monthLabel(k)}</option>`).join('');
+        if (!keys.includes(selectedMonth)) selectedMonth = current;
+        els.monthSelect.value = selectedMonth;
+      }
+   
+      function renderMonthly() {
+        const list = transactions.filter(t => monthKey(t.date) === selectedMonth);
+        const { income, expenses } = getTotals(list);
+        const net = income - expenses;
+   
+        els.monthIncome.textContent  = formatCurrency(income);
+        els.monthExpense.textContent = formatCurrency(expenses);
+        els.monthNet.textContent     = formatCurrency(net);
+        els.monthNet.className       = `stat-value ${net < 0 ? 'expense' : 'income'}`;
+   
+        const prevKey = prevMonthKey(selectedMonth);
+        const prevExp = getTotals(transactions.filter(t => monthKey(t.date) === prevKey)).expenses;
+        if (expenses === 0 && prevExp === 0) {
+          els.monthCompare.innerHTML = '';
+        } else if (prevExp === 0) {
+          els.monthCompare.textContent = `No expenses in ${monthLabel(prevKey)} to compare with.`;
+        } else {
+          const pct = Math.round(Math.abs(expenses - prevExp) / prevExp * 100);
+          if (pct === 0) {
+            els.monthCompare.textContent = `Spending is the same as ${monthLabel(prevKey)}.`;
+          } else {
+            const more = expenses > prevExp;
+            els.monthCompare.innerHTML =
+              `<span class="${more ? 'up' : 'down'}">${more ? '▲' : '▼'} ${pct}% ${more ? 'more' : 'less'}</span> spending than ${monthLabel(prevKey)}`;
+          }
+        }
+   
+        const byCat = {};
+        list.filter(t => t.type === 'expense').forEach(t => {
+          byCat[t.category] = (byCat[t.category] || 0) + t.amount;
+        });
+        const rows = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+   
+        if (rows.length === 0) {
+          els.categoryChart.innerHTML = `<p class="chart-empty">No expenses recorded for ${monthLabel(selectedMonth)}.</p>`;
+          return;
+        }
+        els.categoryChart.innerHTML = rows.map(([cat, amt], i) => {
+          const pct = Math.round(amt / expenses * 100);
+          return `<div class="chart-row">
+            <span class="chart-label">${escHtml(getCategoryLabel(cat, 'expense'))}</span>
+            <div class="chart-track"><div class="chart-fill" style="width:${Math.max(pct, 2)}%;background:${CHART_COLORS[i % CHART_COLORS.length]}"></div></div>
+            <span class="chart-value">${formatCurrency(amt)} · ${pct}%</span>
+          </div>`;
+        }).join('');
+      }
    /* ── Full Refresh ── */
    function refresh() {
      renderSummary();
      buildCategoryFilterOptions();
+     buildMonthOptions();
+     renderMonthly();
      renderTransactions();
+
    }
    
    /* ── Modal: Category Options ── */
@@ -293,63 +377,93 @@
      clearFormErrors();
    }
    
-   /* ── Form Validation ── */
-   function clearFormErrors() {
-     ['amountError', 'dateError', 'categoryError'].forEach(id => $(id).textContent = '');
-     ['amount', 'date', 'category'].forEach(id => {
-       $(id).style.borderColor = '';
-       const parent = $(id).closest('.input-prefix');
-       if (parent) parent.style.borderColor = '';
-     });
-   }
+    /* ── Form Validation ── */
+      const MAX_AMOUNT = 100000000; // ₹10 crore
+      const MIN_DATE   = '2000-01-01';
+      const FIELD_ERROR = { amount: 'amountError', date: 'dateError', category: 'categoryError' };
    
-   function setFieldError(inputId, errorId, message) {
-     $(errorId).textContent = message;
-     const input = $(inputId);
-     input.style.borderColor = 'var(--danger)';
-     const parent = input.closest('.input-prefix');
-     if (parent) parent.style.borderColor = 'var(--danger)';
-   }
+      function clearFieldError(inputId) {
+        $(FIELD_ERROR[inputId]).textContent = '';
+        const input = $(inputId);
+        input.style.borderColor = '';
+        input.removeAttribute('aria-invalid');
+        const parent = input.closest('.input-prefix');
+        if (parent) parent.style.borderColor = '';
+      }
    
-   function validateForm() {
-     let valid = true;
-     clearFormErrors();
+      function clearFormErrors() {
+        Object.keys(FIELD_ERROR).forEach(clearFieldError);
+      }
    
-     const amtVal = parseFloat(els.amount.value);
-     if (!els.amount.value || isNaN(amtVal) || amtVal <= 0) {
-       setFieldError('amount', 'amountError', 'Enter a valid amount greater than 0.');
-       valid = false;
-     }
+      function setFieldError(inputId, message) {
+        $(FIELD_ERROR[inputId]).textContent = message;
+        const input = $(inputId);
+        input.style.borderColor = 'var(--danger)';
+        input.setAttribute('aria-invalid', 'true');
+        const parent = input.closest('.input-prefix');
+        if (parent) parent.style.borderColor = 'var(--danger)';
+      }
    
-     if (!els.date.value) {
-       setFieldError('date', 'dateError', 'Please select a date.');
-       valid = false;
-     }
+      function validateForm() {
+        clearFormErrors();
+        const errors = {};
    
-     if (!els.category.value) {
-       setFieldError('category', 'categoryError', 'Please select a category.');
-       valid = false;
-     }
+        // Amount
+        const raw = els.amount.value.trim();
+        const amtVal = parseFloat(raw);
+        if (els.amount.validity.badInput) {
+          errors.amount = 'Enter numbers only, e.g. 250 or 250.50.';
+        } else if (raw === '') {
+          errors.amount = 'Amount is required.';
+        } else if (isNaN(amtVal) || amtVal <= 0) {
+          errors.amount = 'Amount must be greater than ₹0.';
+        } else if (/\.\d{3,}/.test(raw)) {
+          errors.amount = 'Use at most 2 decimal places, e.g. 250.75.';
+        } else if (amtVal > MAX_AMOUNT) {
+          errors.amount = `Amount is too large. The maximum is ${formatCurrency(MAX_AMOUNT)}.`;
+        }
    
-     if (valid && currentFormType === 'expense') {
-       const amount  = parseFloat(parseFloat(els.amount.value).toFixed(2));
-       const editId  = els.editId.value;
-       const nextList = editId
-         ? transactions.map(t => t.id === editId ? { ...t, type: currentFormType, amount } : t)
-         : [...transactions, { type: currentFormType, amount }];
+        // Date
+        const dateVal = els.date.value;
+        if (!dateVal) {
+          errors.date = 'Please select a date.';
+        } else if (dateVal > getTodayStr()) {
+          errors.date = "Date can't be in the future.";
+        } else if (dateVal < MIN_DATE) {
+          errors.date = 'Date must be in the year 2000 or later.';
+        }
    
-       if (getTotals(nextList).balance < 0) {
-         const available = editId
-           ? getTotals(transactions.filter(t => t.id !== editId)).balance
-           : getTotals().balance;
-         setFieldError('amount', 'amountError',
-           `Insufficient balance. Available: ${formatCurrency(Math.max(0, available))}.`);
-         valid = false;
-       }
-     }
+        // Category
+        const validCats = CATEGORIES[currentFormType].map(c => c.value);
+        if (!els.category.value) {
+          errors.category = 'Please select a category.';
+        } else if (!validCats.includes(els.category.value)) {
+          errors.category = `That category doesn't belong to ${currentFormType}. Please choose again.`;
+        }
    
-     return valid;
-   }
+        // Balance rule (only once the amount itself is valid)
+        if (!errors.amount) {
+          const amount = parseFloat(amtVal.toFixed(2));
+          const editId = els.editId.value;
+          const nextList = editId
+            ? transactions.map(t => t.id === editId ? { ...t, type: currentFormType, amount } : t)
+            : [...transactions, { type: currentFormType, amount }];
+   
+          if (getTotals(nextList).balance < 0) {
+            const others = getTotals(editId ? transactions.filter(t => t.id !== editId) : transactions);
+            if (currentFormType === 'expense') {
+              errors.amount = `Insufficient balance. You can spend up to ${formatCurrency(Math.max(0, others.balance))}.`;
+            } else {
+              errors.amount = `Income can't be lower than ${formatCurrency(others.expenses)}, because your expenses would exceed your income.`;
+            }
+          }
+        }
+   
+        const fields = Object.keys(errors);
+        fields.forEach(f => setFieldError(f, errors[f]));
+        if (fields.length) $(fields[0]).focus();
+        return fields.length === 0;
+      }
    
    /* ── CRUD ── */
    function addTransaction(data) {
@@ -438,7 +552,17 @@
      searchQuery = els.searchInput.value.trim();
      renderTransactions();
    });
+    // Month selector
+      els.monthSelect.addEventListener('change', () => {
+        selectedMonth = els.monthSelect.value;
+        renderMonthly();
+      });
    
+    // Clear a field's error as soon as the user edits it
+      ['amount', 'date', 'category'].forEach(id => {
+        $(id).addEventListener('input',  () => clearFieldError(id));
+        $(id).addEventListener('change', () => clearFieldError(id));
+      });
    // Modal buttons
    $('openAddModal').addEventListener('click', openAddModal);
    $('fabAdd').addEventListener('click', openAddModal);   // mobile floating button
@@ -472,6 +596,7 @@ els.amount.addEventListener('wheel', () => {
 }, { passive: true });
    /* ── Init ── */
    function init() {
+    els.date.max = getTodayStr();
      loadFromStorage();
      refresh();
    }

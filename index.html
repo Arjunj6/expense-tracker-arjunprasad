@@ -33,6 +33,24 @@
         <h2 class="card-amount" id="totalExpenses">₹0.00</h2>
       </div>
     </section>
+    
+    <!-- Monthly Summary & Category Chart -->
+    <section class="insights">
+      <div class="section-header">
+        <h3 class="section-title">Monthly Summary</h3>
+        <select class="select-input month-select" id="monthSelect" aria-label="Select month"></select>
+      </div>
+      <div class="insights-body">
+        <div class="month-stats">
+          <div class="stat"><span class="stat-label">Income</span><strong class="stat-value income" id="monthIncome">₹0.00</strong></div>
+          <div class="stat"><span class="stat-label">Expenses</span><strong class="stat-value expense" id="monthExpense">₹0.00</strong></div>
+          <div class="stat"><span class="stat-label">Net Savings</span><strong class="stat-value" id="monthNet">₹0.00</strong></div>
+        </div>
+        <p class="month-compare" id="monthCompare"></p>
+        <h4 class="chart-title">Spending by category</h4>
+        <div class="category-chart" id="categoryChart"></div>
+      </div>
+    </section>
 
     <!-- Filters -->
     <section class="filters-section">
