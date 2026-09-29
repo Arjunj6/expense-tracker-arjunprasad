@@ -47,17 +47,7 @@ npm install
 npm run dev
 ```
 
-Then open **http://localhost:8000** in your browser.
-
-
-
-## Available Scripts
-
-| Command           | What it does                                          |
-| ----------------- | ----------------------------------------------------- |
-| `npm run dev`     | Starts the dev server at `http://localhost:8000`      |
-| `npm run build`   | Creates an optimized production build in `dist/`      |
-| `npm run preview` | Serves the production build locally to test it        |
+Then open **http://localhost:8000** in your browser or you can add your own port number using --port xxxx
 
 ## Run on Your Phone (hosted from your PC)
 

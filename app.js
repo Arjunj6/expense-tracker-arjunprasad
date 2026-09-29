@@ -452,7 +452,7 @@
           if (getTotals(nextList).balance < 0) {
             const others = getTotals(editId ? transactions.filter(t => t.id !== editId) : transactions);
             if (currentFormType === 'expense') {
-              errors.amount = `Insufficient balance. You can spend up to ${formatCurrency(Math.max(0, others.balance))}.`;
+              errors.amount = `The math doesn't add up. You can spend up to ${formatCurrency(Math.max(0, others.balance))}.`;
             } else {
               errors.amount = `Income can't be lower than ${formatCurrency(others.expenses)}, because your expenses would exceed your income.`;
             }
