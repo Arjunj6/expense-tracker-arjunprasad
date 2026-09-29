@@ -109,25 +109,6 @@ All transactions are stored in your browser's `localStorage` on your own device.
 - Data is **per browser and per device**. Opening the app in another browser or on another machine starts with an empty list.
 - Clearing your browser's site data will erase your transactions.
 
-## Deployment
-
-The app is a static site, so it can be hosted anywhere that serves static files (GitHub Pages, Netlify, Vercel, etc.).
-
-```bash
-npm run build
-```
-
-Upload or deploy the generated `dist/` folder.
-
-**GitHub Pages note:** if you host at `https://YOUR-USERNAME.github.io/expense-tracker/`, add a `vite.config.js` in the project root before building:
-
-```js
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  base: '/expense-tracker/', // use your repo name
-});
-```
 
 ## Troubleshooting
 
